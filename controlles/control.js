@@ -1,9 +1,15 @@
 const MongoClient = require("mongodb").MongoClient;
+
+const nodemailer = require('nodemailer');
    
-const url = "mongodb://127.0.0.1:27017";
-const mongoClient = new MongoClient(url);
+process.env.URL = 'mongodb://127.0.0.1:27017';
+const mongoClient = new MongoClient(process.env.URL);
 
 var ObjectId = require("mongojs").ObjectId;
+var myModule = require('../template/mailtemp.js')
+var mess = myModule.mess;
+
+
 
 
 const bodyParser = require('body-parser')
@@ -12,8 +18,8 @@ const bodyParser = require('body-parser')
 
 
 
+function getC(req,res){
 
-const getC = (req, res)=>{
     
     mongoClient.connect(function(err, client){
       
@@ -23,7 +29,7 @@ const getC = (req, res)=>{
         if(err) return console.log(err);
           
         collection.find().toArray(function(err, results){
-                     
+
             console.log(results);
             res.send(results);
             client.close();
@@ -33,7 +39,9 @@ const getC = (req, res)=>{
 
 };
 
-const postC = (req, res)=>{
+
+
+    function postC(req,res){
     
     mongoClient.connect(function(err, client){
         if (!req.body) res.sendStatus(400);
@@ -55,7 +63,9 @@ const postC = (req, res)=>{
 };
 
 
-const deleteC = (req, res)=>{
+
+
+    function deleteC(req,res){
     
     console.log(req.params.id)
 
@@ -73,7 +83,9 @@ const deleteC = (req, res)=>{
     
 };
 
-const putC = (req, res)=>{
+
+
+    function putC(req,res){
     mongoClient.connect(function(err, client){
 
     
@@ -118,7 +130,10 @@ const putC = (req, res)=>{
 
 
 
-const getU = (req, res)=>{
+
+    function getU(req,res){
+   
+   
     
     mongoClient.connect(function(err, client){
       
@@ -138,7 +153,9 @@ const getU = (req, res)=>{
 
 };
 
-const postU = (req, res)=>{
+
+
+    function postU(req,res){
     
     mongoClient.connect(function(err, client){
         if (!req.body) res.sendStatus(400);
@@ -161,7 +178,9 @@ const postU = (req, res)=>{
 };
 
 
-const deleteU = (req, res)=>{
+
+
+    function deleteU(req,res){
     
     console.log(req.params.id)
 
@@ -179,7 +198,8 @@ const deleteU = (req, res)=>{
     
 };
 
-const putU = (req, res)=>{
+
+    function putU(req,res){
     if (!req.body) res.status(400).send("Failed to change");
   
     let uId = req.body.id;
@@ -220,37 +240,32 @@ const putU = (req, res)=>{
 
 
 
-const nodemailer = require('nodemailer');
 
-const getS = (req, res)=>{
-    res.send(
-        `<h1 style='text-align: center'><br><br></h1>
-        <p class="full">
-       You invaint to cours
-      </p>`
-        
-      );
+
+
+
+
+
+function getS(req,res){
+    res.send(mess);
 }
 
 
-const postS = (req, res)=>{
-    const output = `
-    <p>Link for add for new cours</p>
-  
-  `;
+function postS(req, res){
+
    
   
   let userEmail = req.body;
   console.log("ll")
-  
+  const  {user,pas} =  require('../credentials/credential.js');
     
     let transporter = nodemailer.createTransport({
       host: 'smtp.mail.ru',
       port: 587,
       secure: false, 
       auth: {
-          user: 'maryangular1907@mail.ru', 
-          pass: 'ouryW0plKhTjBeDzRwRS'  
+          user: user, 
+          pass: pas  
       },
       tls:{
         rejectUnauthorized:false
